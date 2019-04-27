@@ -1,14 +1,15 @@
 import React, { Component } from 'react';
 import { graphql, compose } from 'react-apollo';
 import Button from '@material-ui/core/Button';
-import Grid from '@material-ui/core/Grid'
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Typography from '@material-ui/core/Typography'
-import { withStyles, MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
+import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import green from '@material-ui/core/colors/green';
+
+import AddSkillIcon from '../icons/addSkill.svg'
 import { addSkillMutation, getSkillsQuery } from '../queries/queries';
 
 const theme = createMuiTheme({
@@ -40,14 +41,18 @@ class AddSkill extends Component {
         name: this.state.name,
         category: this.state.category,
       },
-      refetchQueries: [{ query: getSkillsQuery }]
+      refetchQueries: [{
+        query: getSkillsQuery, variables: {
+          awaitRefetchQueries: true
+        }
+      }]
     });
     this.setState({ alert: true });
 
   }
 
   handleClickOpen = () => {
-    this.setState({ open: false });
+    this.setState({ open: false, name: '', category: '' });
   };
 
   handleClose = () => {
@@ -70,22 +75,28 @@ class AddSkill extends Component {
 
 
         <form hidden={this.state.open} id="add-book" onSubmit={this.submitForm.bind(this)} >
+          <Typography gutterBottom component="h2" >
+            <img src={AddSkillIcon} alt="na" />
+
+          </Typography>
           <div className="field">
             <label>Skill name:</label>
-            <input type="text" onChange={(e) => this.setState({ name: e.target.value })} />
+            <input type="text" value={this.state.name} onChange={(e) => this.setState({ name: e.target.value })} />
           </div>
           <div className="field">
             <label>Category:</label>
-            <input type="text" onChange={(e) => this.setState({ category: e.target.value })} />
+            <input type="text" value={this.state.category} onChange={(e) => this.setState({ category: e.target.value })} />
           </div>
 
           <div style={{ textAlign: 'center', paddingTop: '10px' }}>
+
+            <Button variant="contained" onClick={this.handleClose}>Close</Button>
+            <div className="divider" />
             <MuiThemeProvider theme={theme}>
               <Button variant="contained" color="primary" type="submit" >
                 Save
         </Button>
             </MuiThemeProvider>
-            <Button variant="contained" onClick={this.handleClose}>Close</Button>
           </div>
         </form>
 

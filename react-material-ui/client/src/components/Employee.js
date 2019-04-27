@@ -2,6 +2,10 @@ import React, { Component } from 'react';
 import { graphql, compose } from 'react-apollo';
 
 import Card from '@material-ui/core/Card'
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogTitle from '@material-ui/core/DialogTitle';
 import CardActions from '@material-ui/core/CardActions'
 import CardContent from '@material-ui/core/CardContent'
 import CardMedia from '@material-ui/core/CardMedia'
@@ -12,7 +16,7 @@ import Fab from '@material-ui/core/Fab';
 import DeleteIcon from '@material-ui/icons/Delete';
 
 import SkillList from '../components/SkillList'
-import AddEmployee from '../components/AddEmployee'
+//import AddEmployee from '../components/AddEmployee'
 import EditEmployee from '../components/EditEmployee'
 
 import { deleteEmployeeMutation, getSkillsQuery, updateEmployeeMutation } from '../queries/queries';
@@ -22,7 +26,9 @@ class Employee extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            employee: props.employee
+            employee: props.employee,
+            alert:false
+
 
         };
     }
@@ -34,11 +40,22 @@ class Employee extends Component {
                 id: param,
                 editForm: true
             },
-            refetchQueries: [{ query: getSkillsQuery }]
+            refetchQueries: [{
+                query: getSkillsQuery,
+                variables: {
+                    awaitRefetchQueries: true
+                }
+            }]
         });
+        this.setState({ alert: true});
+
     }
 
-
+    handleCloseAlert = () => {
+        this.setState({ alert: false });
+    
+    
+      };
 
 
 
@@ -53,7 +70,7 @@ class Employee extends Component {
                         <CardContent>
                             <Typography gutterBottom variant="headline" component="h2" >
                                 {this.state.employee.name}
-                                <Fab href="http://localhost:3000/" aria-label="Delete" style={{ float: 'right' }} onClick={(e) => {
+                                <Fab /*href="http://localhost:3000/"*/ aria-label="Delete" style={{ float: 'right' }} onClick={(e) => {
                                     this.deleteProfile(e, this.state.employee.id)
                                 }}>
                                     <DeleteIcon />
@@ -67,14 +84,34 @@ class Employee extends Component {
                         </CardContent>
                         <CardActions>
                             <Button size="small" style={{ flex: 1 }} variant="contained" color="secondary" href={this.state.employee.image} target="_blank">
-                                View Profile             
+                                View Profile
                          </Button>
 
-                            <EditEmployee  employee={this.state.employee} />
+                            <EditEmployee employee={this.state.employee} />
 
                         </CardActions>
                     </Card>
+                    
                 ) : null}
+                  <Dialog
+                      aria-labelledby="customized-dialog-title"
+                      open={this.state.alert}
+                    >
+                      <DialogTitle id="customized-dialog-title" >
+                        Alert
+                      </DialogTitle>
+                      <DialogContent>
+                        <Typography gutterBottom>
+                          Profile Removed !
+                        </Typography>
+            
+                      </DialogContent>
+                      <DialogActions>
+                        <Button onClick={this.handleCloseAlert} color="primary">
+                          Ok
+                        </Button>
+                      </DialogActions>
+                    </Dialog>
             </div>
         )
     }

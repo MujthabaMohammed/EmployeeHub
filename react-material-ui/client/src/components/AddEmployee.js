@@ -6,8 +6,10 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Typography from '@material-ui/core/Typography'
-import {MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
+import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import green from '@material-ui/core/colors/green';
+import AddIcon from '../icons/add.svg'
+
 
 
 import { getSkillsQuery, addEmployeeMutation } from '../queries/queries';
@@ -29,7 +31,7 @@ class AddEmployee extends Component {
       name: '',
       company: '',
       skillId: '',
-      image: '',
+      image: 'https://i.ibb.co/nwnJgNm/none.jpg',
       open: true,
       alert: false,
     };
@@ -45,8 +47,10 @@ class AddEmployee extends Component {
     }
   }
   submitForm(e) {
-    //e.preventDefault()
+    e.preventDefault()
     // use the addEmployeeMutation
+
+
     this.props.addEmployeeMutation({
       variables: {
         name: this.state.name,
@@ -54,13 +58,17 @@ class AddEmployee extends Component {
         skillId: this.state.skillId,
         image: this.state.image
       },
-      refetchQueries: [{ query: getSkillsQuery }]
+      refetchQueries: [{
+        query: getSkillsQuery, variables: {
+          awaitRefetchQueries: true
+        }
+      }]
     });
-    this.setState({ alert: true });
+    this.setState({ alert: true , open :true });
   }
 
   handleClickOpen = () => {
-    this.setState({ open: false });
+    this.setState({ open: false, name: '', company: '', image: '' });
   };
 
   handleClose = () => {
@@ -81,17 +89,21 @@ class AddEmployee extends Component {
         <Button variant="contained" color="primary" onClick={this.handleClickOpen}>Add Profile</Button>
 
         <form hidden={this.state.open} onSubmit={this.submitForm.bind(this)} >
+          <Typography gutterBottom component="h2" >
+            <img src={AddIcon} alt="na" />
+
+          </Typography>
           <div className="field">
             <label>Employee name:</label>
-            <input type="text" onChange={(e) => this.setState({ name: e.target.value })} />
+            <input type="text" value={this.state.name} onChange={(e) => this.setState({ name: e.target.value })} />
           </div>
           <div className="field">
             <label>Company:</label>
-            <input type="text" onChange={(e) => this.setState({ company: e.target.value })} />
+            <input type="text" value={this.state.company} onChange={(e) => this.setState({ company: e.target.value })} />
           </div>
           <div className="field">
             <label>Image URL:</label>
-            <input type="text" onChange={(e) => this.setState({ image: e.target.value })} />
+            <input type="text" value={this.state.image} onChange={(e) => this.setState({ image: e.target.value })} />
           </div>
           <div className="field">
             <label>Skill:</label>
@@ -102,12 +114,14 @@ class AddEmployee extends Component {
           </div>
 
           <div style={{ textAlign: 'center', paddingTop: '10px' }}>
+
+            <Button variant="contained" onClick={this.handleClose}>Close</Button>
+            <div className="divider" />
             <MuiThemeProvider theme={theme} >
               <Button variant="contained" color="primary" type="submit" >
                 Save
         </Button>
             </MuiThemeProvider>
-            <Button variant="contained" onClick={this.handleClose}>Close</Button>
           </div>
         </form>
 

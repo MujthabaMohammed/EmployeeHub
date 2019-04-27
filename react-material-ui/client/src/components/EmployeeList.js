@@ -1,8 +1,7 @@
 import React, { Component } from 'react'
-import { graphql, compose } from 'react-apollo';
+import { graphql} from 'react-apollo';
 import Grid from '@material-ui/core/Grid'
 import TextField from '@material-ui/core/TextField'
-import Button from '@material-ui/core/Button';
 import Employee from '../components/Employee'
 
 import { getSkillsQuery } from '../queries/queries';
